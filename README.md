@@ -1,50 +1,45 @@
-﻿Inception - 42 Project
-This project has been created as part of the 42 curriculum by <mbenzira>.
-Description
-Inception is a System Administration project that aims to broaden the knowledge of virtualization by using Docker. The goal is to set up a small infrastructure composed of several services, all running in their own dedicated containers within a virtual machine.
-The infrastructure consists of:
-    • NGINX (TLS v1.2/v1.3 only).
-    • WordPress (running with php-fpm, without Nginx in the same container).
-    • MariaDB (Database).
-    • All services are built from Debian Bullseye to ensure a deep understanding of service configuration without using "pre-made" images.
-Project Description & Design Choices
-The project is structured to enforce the Principle of Least Privilege and service isolation. Every service runs in its own container, communicating via a private network.
-Design Choices
-    • Init Scripts: Custom entrypoints are used to ensure MariaDB and WordPress are configured automatically (database creation, user setup via WP-CLI) before the services start in the foreground.
-    • PID 1 Management: Services are launched using exec to ensure they receive signals correctly and remain the primary process of the container.
-Technical Comparisons
-Feature	Comparison
-Virtual Machines vs Docker	VMs virtualize hardware and run a full OS, making them heavy. Docker virtualizes the OS kernel, sharing the host's kernel, which makes containers lightweight and fast.
-Secrets vs Env Variables	Environment variables are easy to use but can be leaked via process logs. Docker Secrets (or encrypted files) provide a more secure way to handle sensitive data like DB passwords.
-Docker Network vs Host Network	Host network shares the host's IP/ports directly (less secure). Docker Network (Bridge) creates an isolated virtual network where containers can only see each other via internal DNS.
-Docker Volumes vs Bind Mounts	Volumes are managed by Docker (best for performance/backups). Bind mounts map a specific host path to a container, useful here to persist data in /home/mbenzira/data.
-Instructions
-Prerequisites
-    • A Linux Virtual Machine (Debian recommended).
-    • Docker and docker-compose installed.
-    • Local domain mapping in /etc/hosts: 127.0.0.1 mbenzira.42.fr
-Compilation & Execution
-Go to the root of the repository and use the provided Makefile:
-Bash
-# To build and start the infrastructure
-make
+﻿# 🐳 Inception - 42 Project
 
-# To stop the containers
-make down
+*This project has been created as part of the 42 curriculum by [mbenzira].*
 
-# To clean all data (volumes, images, networks)
-make fclean
+---
 
-# To rebuild everything
-make re
-Resources
-    • Docker Documentation
-    • NGINX TLS Configuration
-    • WordPress CLI (WP-CLI)
-    • MariaDB Knowledge Base
-Use of AI
-Gemini was used as a collaborative peer during this project for the following tasks:
-    • Debugging: Identifying "Connection reset by peer" errors related to PHP-FPM socket permissions.
-    • Architecture Design: Explaining the difference between ENTRYPOINT and CMD to comply with the 42 subject constraints (no background processes).
-    • Scripting: Assisting in the logic for the MariaDB initialization script to ensure the service stays in the foreground.
-    • Documentation: Correct the errors in the readme.
+## 📝 Description
+
+**Inception** is a System Administration project designed to deepen knowledge of virtualization and infrastructure orchestration using **Docker**. 
+
+The goal is to build a high-availability small-scale infrastructure composed of several interconnected services. To ensure a thorough understanding of system configuration, all services are built from **Debian Bullseye**, prohibiting the use of "ready-to-use" automated images.
+
+### 🏗️ Infrastructure Overview
+* **NGINX**: Configured exclusively for **TLS v1.2/v1.3** to secure traffic.
+* **WordPress**: Served via **php-fpm**. Note: Nginx and WordPress reside in separate containers.
+* **MariaDB**: The relational database management system.
+
+[Image of Docker container architecture showing Nginx, WordPress, and MariaDB]
+
+---
+
+## 🛠️ Project Description & Design Choices
+
+The architecture follows the **Principle of Least Privilege** and strict service isolation. Every component is sandboxed, communicating only via a dedicated private network.
+
+### Design Choices
+* **Custom Init Scripts**: We use specific entrypoint scripts to automate the creation of databases and WordPress users (via WP-CLI). These scripts ensure everything is ready *before* the main service starts.
+* **PID 1 Management**: All services are launched using the `exec` command. This ensures that the service (e.g., MariaDB) becomes the primary process (PID 1), allowing Docker to handle signals (like stop/restart) correctly and gracefully.
+
+### 📊 Technical Comparisons
+
+| Feature | Virtual Machines vs Docker |
+| :--- | :--- |
+| **Virtual Machines** | Virtualize hardware. Each VM has a full OS, making them heavy and slow to boot. |
+| **Docker** | Virtualizes the OS kernel. Containers share the host kernel, making them lightweight and extremely fast. |
+
+| Feature | Secrets vs Env Variables |
+| :--- | :--- |
+| **Env Variables** | Simple to use but visible in process logs and `docker inspect`. |
+| **Secrets** | More secure. Sensitive data (passwords) is provided to the container at runtime without being stored in the image. |
+
+| Feature | Docker Network vs Host Network |
+| :--- | :--- |
+| **Host Network** | The container shares the host's IP and ports directly (low security/isolation). |
+| **Docker Network** | Creates a private virtual bridge. Containers communicate via internal DNS (
