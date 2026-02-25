@@ -1,80 +1,125 @@
-📘 User Documentation - Inception Project
+📘 User Documentation – Inception Project
 
 This document provides clear and simple instructions on how to use, manage, and verify the Inception web infrastructure.
 
-1. Services Overview
+🏗 Services Overview
 
-The infrastructure (or "stack") is composed of three main services working together to provide a secure web environment:
+The infrastructure (or stack) is composed of three main services working together to provide a secure web environment:
 
-NGINX: The secure web server. It acts as the entry point for all traffic, handling encryption (TLS v1.2/v1.3) to keep your data safe.
+🌐 NGINX
 
-WordPress: The Content Management System (CMS). This is the engine that allows you to create, manage, and read website articles. It runs using php-fpm.
+The secure web server.
+It acts as the entry point for all traffic, handling encryption (TLS v1.2 / TLS v1.3) to keep your data safe.
 
-MariaDB: The database. This is where all the website's data (posts, users, comments, and settings) is securely stored.
+📝 WordPress
 
-2. Managing the Project
+The Content Management System (CMS).
+This is the engine that allows you to create, manage, and read website articles.
+It runs using php-fpm.
+
+🗄 MariaDB
+
+The database service.
+This is where all the website's data (posts, users, comments, and settings) is securely stored.
+
+🛠 Managing the Project
 
 You can control the entire infrastructure using simple commands from the root of the project folder.
 
-To start the project (build and launch):
-
+▶️ Start the Project (Build & Launch)
 make
 
+Builds Docker images and launches all services.
 
-To stop the project (without deleting your data):
-
+⏸ Stop the Project (Without Deleting Data)
 make stop
 
+Stops running containers but keeps your data intact.
 
-To shut down and clean up (removes containers and network):
-
+🧹 Shut Down and Clean Up
 make down
 
+Stops and removes containers and the network.
 
-3. Accessing the Website
+🌍 Accessing the Website
+⚙️ Local Configuration
 
-Local Configuration
+Before connecting for the first time, ensure your computer recognizes the site’s address.
 
-Before connecting for the first time, you must ensure your computer recognizes the site's address. The domain name used is: mbenzira.42.fr.
+Add this line to your /etc/hosts file:
 
-Public Website
+127.0.0.1 mbenzira.42.fr
+🌐 Public Website
 
 To view the website, open your browser and go to:
+
 👉 https://mbenzira.42.fr
 
-Administration Panel
+🔐 Administration Panel
 
-To manage the site, add posts, or manage users, access the admin interface:
+To manage the site, add posts, or manage users:
+
 👉 https://mbenzira.42.fr/wp-admin
 
-4. Credentials Management
+🔑 Credentials Management
 
 For security reasons, no passwords or usernames are written directly in the project code.
 
-Location: All usernames and passwords are grouped in the following hidden file: srcs/.env.
+📂 Location
 
-Management: If you need to change a password (for the database or the WordPress admin), modify the values in this file, then restart the project using the command make re.
+All usernames and passwords are grouped in the following hidden file:
 
-5. Verifying Service Health
+srcs/.env
+🔄 Updating Credentials
 
-If the website is unreachable, you can check the health of the services using these methods:
+If you need to change a password (database or WordPress admin):
 
-Quick Status Check
+Modify the values inside srcs/.env
 
-Run the following command in your terminal:
+Restart the project with:
 
+make re
+🩺 Verifying Service Health
+
+If the website is unreachable, you can check the health of the services using the following methods.
+
+🔍 Quick Status Check
 docker ps
 
+You should see three containers:
 
-You should see three lines (nginx, wordpress, mariadb). The STATUS column should indicate Up for all of them.
+nginx
 
-Error Logs
+wordpress
 
-If a service is stopped or behaving unexpectedly, you can read the error logs by typing:
+mariadb
+
+The STATUS column should indicate:
+
+Up
+
+for all services.
+
+📜 Error Logs
+
+If a service is stopped or behaving unexpectedly, check the logs:
 
 docker compose -f srcs/docker-compose.yml logs -f
 
+This will display real-time logs for troubleshooting.
 
-SSL Security Note
+🔒 SSL Security Note
 
-During the first connection, your browser will show a security warning ("Your connection is not private"). This is normal because we use a self-signed certificate. Click on Advanced and then Proceed to mbenzira.42.fr.
+During the first connection, your browser may show a security warning:
+
+"Your connection is not private"
+
+This is normal because the project uses a self-signed SSL certificate.
+
+To proceed:
+
+Click Advanced
+
+Click Proceed to mbenzira.42.fr
+
+DONE !
