@@ -1,127 +1,66 @@
 📘 User Documentation – Inception Project
-
 This document provides clear and simple instructions on how to use, manage, and verify the Inception web infrastructure.
 
 🏗 Services Overview
-
 The infrastructure (or stack) is composed of three main services working together to provide a secure web environment:
 
-🌐 NGINX
-
-The secure web server.
-It acts as the entry point for all traffic, handling encryption (TLS v1.2 / TLS v1.3) to keep your data safe.
-
-📝 WordPress
-
-The Content Management System (CMS).
-This is the engine that allows you to create, manage, and read website articles.
-It runs using php-fpm.
-
-🗄 MariaDB
-
-The database service.
-This is where all the website's data (posts, users, comments, and settings) is securely stored.
-
+Service	Role	Details
+🌐 NGINX	Secure Web Server	The entry point for all traffic. Handles encryption via TLS v1.2 / v1.3.
+📝 WordPress	CMS	The Content Management System. Runs using php-fpm.
+🗄 MariaDB	Database	Securely stores all website data (posts, users, settings).
 🛠 Managing the Project
+You can control the entire infrastructure using simple make commands from the root of the project folder.
 
-You can control the entire infrastructure using simple commands from the root of the project folder.
-
-▶️ Start the Project (Build & Launch)
-make
-
-Builds Docker images and launches all services.
-
-⏸ Stop the Project (Without Deleting Data)
-make stop
-
-Stops running containers but keeps your data intact.
-
-🧹 Shut Down and Clean Up
-make down
-
-Stops and removes containers and the network.
-
+Command	Action
+make	Start: Builds Docker images and launches all services.
+make stop	Stop: Stops running containers but keeps your data intact.
+make down	Clean Up: Stops and removes containers and the network.
+make re	Restart: Full rebuild and restart of the infrastructure.
 🌍 Accessing the Website
 ⚙️ Local Configuration
+Before connecting for the first time, ensure your computer recognizes the site’s address. Add this line to your /etc/hosts file:
 
-Before connecting for the first time, ensure your computer recognizes the site’s address.
-
-Add this line to your /etc/hosts file:
-
+Plaintext
 127.0.0.1 mbenzira.42.fr
-🌐 Public Website
+🔗 Links
+Public Website: https://mbenzira.42.fr
 
-To view the website, open your browser and go to:
-
-👉 https://mbenzira.42.fr
-
-🔐 Administration Panel
-
-To manage the site, add posts, or manage users:
-
-👉 https://mbenzira.42.fr/wp-admin
+Administration Panel: https://mbenzira.42.fr/wp-admin
 
 🔑 Credentials Management
-
 For security reasons, no passwords or usernames are written directly in the project code.
 
-📂 Location
+Location: All credentials are stored in the hidden file srcs/.env.
 
-All usernames and passwords are grouped in the following hidden file:
+Updating Credentials:
 
-srcs/.env
-🔄 Updating Credentials
+Modify the values inside srcs/.env.
 
-If you need to change a password (database or WordPress admin):
+Restart the project to apply changes:
 
-Modify the values inside srcs/.env
-
-Restart the project with:
-
+Bash
 make re
 🩺 Verifying Service Health
-
-If the website is unreachable, you can check the health of the services using the following methods.
+If the website is unreachable, check the status of the services using these methods:
 
 🔍 Quick Status Check
+Run the following command:
+
+Bash
 docker ps
-
-You should see three containers:
-
-nginx
-
-wordpress
-
-mariadb
-
-The STATUS column should indicate:
-
-Up
-
-for all services.
+The STATUS column should indicate Up for nginx, wordpress, and mariadb.
 
 📜 Error Logs
+If a service is behaving unexpectedly, check the real-time logs:
 
-If a service is stopped or behaving unexpectedly, check the logs:
-
+Bash
 docker compose -f srcs/docker-compose.yml logs -f
-
-This will display real-time logs for troubleshooting.
-
 🔒 SSL Security Note
-
-During the first connection, your browser may show a security warning:
-
-"Your connection is not private"
+[!IMPORTANT]
+During the first connection, your browser will show a security warning: "Your connection is not private".
 
 This is normal because the project uses a self-signed SSL certificate.
-
-To proceed:
 
 Click Advanced
 
 Click Proceed to mbenzira.42.fr
-
-✅ DONE!
-
-Your Inception infrastructure is now ready to use 🚀
