@@ -1,5 +1,5 @@
 ﻿Inception - 42 Project
-This project has been created as part of the 42 curriculum by [mbenzira].
+This project has been created as part of the 42 curriculum by <mbenzira>.
 Description
 Inception is a System Administration project that aims to broaden the knowledge of virtualization by using Docker. The goal is to set up a small infrastructure composed of several services, all running in their own dedicated containers within a virtual machine.
 The infrastructure consists of:
@@ -47,4 +47,4 @@ Gemini was used as a collaborative peer during this project for the following ta
     • Debugging: Identifying "Connection reset by peer" errors related to PHP-FPM socket permissions.
     • Architecture Design: Explaining the difference between ENTRYPOINT and CMD to comply with the 42 subject constraints (no background processes).
     • Scripting: Assisting in the logic for the MariaDB initialization script to ensure the service stays in the foreground.
-    • Documentation: Structure and technical proofreading of this README.
+    • Documentation: Correct the errors in the readme.
