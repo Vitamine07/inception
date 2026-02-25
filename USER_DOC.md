@@ -122,4 +122,6 @@ Click Advanced
 
 Click Proceed to mbenzira.42.fr
 
-DONE !
+✅ DONE!
+
+Your Inception infrastructure is now ready to use 🚀
