@@ -1,132 +1,192 @@
-🛠 Developer Documentation - Inception Internal Project
+Voici ton fichier reformatté proprement en **Markdown (.md)**, prêt à être mis sur GitHub :
 
-This document details the technical architecture, workflow, and debugging procedures for the Inception infrastructure.
+---
 
-1. Environment Configuration
+# 🛠 Developer Documentation – Inception Internal Project
 
-Prerequisites
+This document details the technical architecture, workflow, and debugging procedures for the **Inception infrastructure**.
 
-To replicate this environment, the following tools must be installed on a Linux host (Debian Bullseye recommended):
+---
 
-Docker Engine (v20.10+)
+# 📦 Environment Configuration
 
-Docker Compose (v2.0+)
+## ✅ Prerequisites
 
-GNU Make
+To replicate this environment, the following tools must be installed on a Linux host (**Debian Bullseye recommended**):
 
-Local Domain Mapping: Add the following line to your /etc/hosts file:
+* Docker Engine (v20.10+)
+* Docker Compose (v2.0+)
+* GNU Make
 
+## 🌐 Local Domain Mapping
+
+Add the following line to your `/etc/hosts` file:
+
+```bash
 127.0.0.1 mbenzira.42.fr
+```
 
+---
 
-Secrets and Configuration
+# 🔐 Secrets and Configuration
 
-The project uses a central .env file located in the srcs/ directory. This file must define:
+The project uses a central `.env` file located in the `srcs/` directory.
 
-DOMAIN_NAME: The site URL (e.g., mbenzira.42.fr).
+This file must define:
 
-SQL_DATABASE, SQL_USER, SQL_PASSWORD, SQL_ROOT_PASSWORD: For MariaDB configuration.
+```env
+DOMAIN_NAME=mbenzira.42.fr
 
-WP_ADMIN_USER, WP_ADMIN_PASSWORD, WP_USER, WP_USER_PASSWORD: For WordPress initialization.
+SQL_DATABASE=
+SQL_USER=
+SQL_PASSWORD=
+SQL_ROOT_PASSWORD=
 
-2. Workflow (Build & Launch)
+WP_ADMIN_USER=
+WP_ADMIN_PASSWORD=
+WP_USER=
+WP_USER_PASSWORD=
+```
 
-The project is managed via a Makefile at the root of the repository. This ensures consistency in commands for building and cleaning the environment.
+---
 
-Command
+# 🚀 Workflow (Build & Launch)
 
-Action
+The project is managed via a **Makefile** at the root of the repository.
+This ensures consistency in commands for building and cleaning the environment.
 
-make
+## 📋 Available Commands
 
-Builds Docker images and starts all services in the background.
+| Command       | Action Description                                                               |
+| ------------- | -------------------------------------------------------------------------------- |
+| `make`        | Builds Docker images and starts all services in the background                   |
+| `make stop`   | Pauses running containers                                                        |
+| `make down`   | Stops and removes containers and networks                                        |
+| `make fclean` | **Evaluation Reset**: Stops everything and deletes images, networks, and volumes |
+| `make re`     | Forces a full reconstruction of the entire infrastructure                        |
 
-make stop
+---
 
-Pauses running containers.
+# 💾 Data Persistence (Bind Mounts)
 
-make down
+Persistence is managed via **Bind Mounts**, linking host directories to container directories.
+This allows data to survive container deletion.
 
-Stops and removes containers and networks.
+## 📂 Host Paths
 
-make fclean
-
-The Evaluation Reset: Stops everything and deletes images, networks, and volumes.
-
-make re
-
-Forces a full reconstruction of the entire infrastructure.
-
-3. Data Persistence (Bind Mounts)
-
-Persistence is managed via Bind Mounts to link host directories to container directories. This allows data to survive container deletion.
-
-Host Paths:
-
+```
 /home/mbenzira/data/mariadb
-
 /home/mbenzira/data/wordpress
+```
 
-Container Paths:
+## 📂 Container Paths
 
-MariaDB: /var/lib/mysql
+| Service   | Container Path   |
+| --------- | ---------------- |
+| MariaDB   | `/var/lib/mysql` |
+| WordPress | `/var/www/html`  |
 
-WordPress: /var/www/html
+### ❓ Why Bind Mounts?
 
-Why Bind Mounts? They allow the administrator to manage files directly from the mbenzira host system without needing to explore Docker's internal storage.
+They allow the administrator to manage files directly from the **mbenzira host system** without needing to explore Docker's internal storage.
 
-4. Database Inspection (MariaDB)
+---
+
+# 🗄 Database Inspection (MariaDB)
 
 During evaluation, you will need to prove the database is functional and contains the correct data.
 
-Step 1: Access the MariaDB CLI
+## 🔹 Step 1: Access the MariaDB CLI
 
 Run this command from your host terminal:
 
+```bash
 docker exec -it mariadb mysql -u root -p
+```
 
+Enter the **ROOT password** defined in your `.env` file when prompted.
 
-(Enter the ROOT password defined in your .env file when prompted).
+---
 
-Step 2: Essential SQL Queries for Debugging
+## 🔹 Step 2: Essential SQL Queries for Debugging
 
 Once inside the MariaDB prompt:
 
+```sql
 -- List all databases
 SHOW DATABASES;
 
 -- Access the specific WordPress database
 USE wordpress_db;
 
--- List all tables (verify that WordPress created its tables)
+-- List all tables (verify WordPress created its tables)
 SHOW TABLES;
 
--- Verify that WordPress users were created by the init script
+-- Verify WordPress users were created by the init script
 SELECT user_login, user_email FROM wp_users;
 
 -- Exit the database
 exit
+```
 
+---
 
-5. Docker Management and Debugging
+# 🐳 Docker Management and Debugging
 
-Use these commands to monitor the status and health of the infrastructure:
+## 📜 View All Logs in Real-Time
 
-View all logs in real-time: docker compose -f srcs/docker-compose.yml logs -f
+```bash
+docker compose -f srcs/docker-compose.yml logs -f
+```
 
-Check service status: docker ps (Ensure all containers are 'Up').
+## 🔍 Check Service Status
 
-Inspect the network: docker network inspect srcs_inception_network (Verify isolation).
+```bash
+docker ps
+```
 
-WordPress verification via CLI:
+Ensure all containers are **Up**.
 
+## 🌐 Inspect the Network
+
+```bash
+docker network inspect srcs_inception_network
+```
+
+Verify proper isolation.
+
+---
+
+# 🧾 WordPress Verification via CLI
+
+```bash
 docker exec -it wordpress wp user list --allow-root
+```
 
+This confirms that WordPress users were correctly initialized.
 
-6. Technical Design Choices
+---
 
-PID 1 Management: All services are launched via the exec command in their respective entrypoint scripts. This ensures that system signals (like SIGTERM) are handled correctly.
+# 🏗 Technical Design Choices
 
-No Background Processes: As required by the 42 subject, no service runs in the background. Everything runs in the foreground to keep the container active and responsive to logs.
+## ⚙️ PID 1 Management
 
-Network Security: Containers share a dedicated bridge network. The database is intentionally not exposed on any host port.
+All services are launched via the `exec` command in their respective entrypoint scripts.
+This ensures system signals (like `SIGTERM`) are handled correctly.
+
+## 🚫 No Background Processes
+
+As required by the 42 subject:
+
+* No service runs in the background
+* Everything runs in the foreground
+* Containers remain active and responsive to logs
+
+## 🔐 Network Security
+
+* Containers share a dedicated bridge network
+* The database is **not exposed on any host port**
+* Internal service communication only
+
+---
+
